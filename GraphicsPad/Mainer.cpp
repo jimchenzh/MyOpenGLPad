@@ -1,5 +1,5 @@
 #include <Qt\qapplication.h>
-#include <MeGLwindow.h>
+#include <MeGLWindow.h>
 int main(int argc, char* argv[])
 {
 	QApplication app(argc, argv);
