@@ -16,6 +16,7 @@ GLfloat posRight[2];
 
 MeGLWindow::MeGLWindow()
 {
+	//Update per frame
 	QTimer *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
 	timer->start(32);
@@ -44,6 +45,7 @@ void MeGLWindow::initializeGL()
 		-0.5f, 0.0f,
 	};
 
+	//Initialize the position offset
 	posLeft[0] = 0;
 	posLeft[1] = 0;
 	posRight[0] = 0;
@@ -86,9 +88,9 @@ void MeGLWindow::initializeGL()
 
 
 	//Set uniforms
-	 startLocation = glGetUniformLocation(programID, "startOffset");	 
+	startLocation = glGetUniformLocation(programID, "startOffset");	 
 
-	 colors = glGetUniformLocation(programID, "theColor");
+	colors = glGetUniformLocation(programID, "theColor");
 	
 
 	posRight[0] = 1.0f; //Set right triangle offset;
@@ -105,6 +107,7 @@ void MeGLWindow::paintGL()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	glViewport(0, 0, width(), height());
+
 	update(1);
 	Draw();
 	update(2);
