@@ -3,6 +3,7 @@
 #include "qkeyevent.h"
 #include <QtCore\qtimer.h>
 #include <iostream>
+using namespace std;
 
 extern const char* vertexShaderCode;
 extern const char* fragmentShaderCode;
@@ -30,7 +31,37 @@ MeGLWindow::~MeGLWindow()
 {
 }
 
+bool checkStatus(GLuint objectID,
+	PFNGLGETSHADERIVPROC objectPropertyGetterFunc,
+	PFNGLGETSHADERINFOLOGPROC getInfoLogFunc,
+	GLenum statusType)
+{
+	GLint Status;
+	objectPropertyGetterFunc(objectID, statusType, &Status);
+	if (Status != GL_TRUE)
+	{
+		GLint infoLogLength;
+		objectPropertyGetterFunc(objectID, GL_INFO_LOG_LENGTH, &infoLogLength);
+		GLchar* buffer = new GLchar[infoLogLength];
 
+		GLsizei bufferSize;
+		getInfoLogFunc(objectID, infoLogLength, &bufferSize, buffer);
+		cout << buffer << endl;
+		delete[] buffer;
+		return false;
+	}
+	return true;
+}
+
+bool checkShaderStatus(GLuint shaderID)
+{
+	return checkStatus(shaderID, glGetShaderiv, glGetShaderInfoLog, GL_COMPILE_STATUS);
+}
+
+bool checkProgramStatus(GLuint programID)
+{	
+	return checkStatus(programID, glGetProgramiv, glGetProgramInfoLog, GL_LINK_STATUS);
+}
 
 void MeGLWindow::initializeGL()
 {
@@ -70,7 +101,7 @@ void MeGLWindow::initializeGL()
 	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
-	const char* adapter[1];
+	const GLchar* adapter[1];
 	adapter[0] = vertexShaderCode;
 	glShaderSource(vertexShaderID, 1, adapter, 0);
 	adapter[0] = fragmentShaderCode;
@@ -79,10 +110,20 @@ void MeGLWindow::initializeGL()
 	glCompileShader(vertexShaderID);
 	glCompileShader(fragmentShaderID);
 
+	if (!checkShaderStatus(vertexShaderID) || !checkShaderStatus(fragmentShaderID))
+	{
+		return;
+	}
+
 	GLuint programID = glCreateProgram();
-	glAttachShader(programID, vertexShaderID);
-	glAttachShader(programID, fragmentShaderID);
+	//glAttachShader(programID, vertexShaderID);
+	//glAttachShader(programID, fragmentShaderID);
 	glLinkProgram(programID);
+
+	if (!checkProgramStatus(programID))
+	{
+		return;
+	}
 
 	glUseProgram(programID);
 
@@ -96,6 +137,8 @@ void MeGLWindow::initializeGL()
 	posRight[0] = 1.0f; //Set right triangle offset;
 
 }
+
+
 
 void Draw()
 {		

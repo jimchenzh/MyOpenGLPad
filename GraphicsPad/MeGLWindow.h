@@ -10,6 +10,7 @@ protected:
 	void paintGL();
 	void keyPressEvent(QKeyEvent * e);
 	void update(int triNum);
+	
 
 public:
 	MeGLWindow();
