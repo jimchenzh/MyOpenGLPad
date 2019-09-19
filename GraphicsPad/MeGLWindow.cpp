@@ -2,11 +2,9 @@
 #include "MeGLWindow.h"
 #include "qkeyevent.h"
 #include <QtCore\qtimer.h>
+#include <fstream>
 #include <iostream>
 using namespace std;
-
-extern const char* vertexShaderCode;
-extern const char* fragmentShaderCode;
 
 GLuint programID;
 GLint startLocation;
@@ -63,6 +61,20 @@ bool checkProgramStatus(GLuint programID)
 	return checkStatus(programID, glGetProgramiv, glGetProgramInfoLog, GL_LINK_STATUS);
 }
 
+string readShaderCode(const char* fileName)
+{
+	ifstream meInput(fileName);
+	if (!meInput.good())
+	{
+		cout << "File failed to load..." << fileName;
+		exit(1);
+	}
+	return std::string(
+		std::istreambuf_iterator<char>(meInput),
+		std::istreambuf_iterator<char>()
+	);
+}
+
 void MeGLWindow::initializeGL()
 {
 	glewInit();
@@ -102,9 +114,11 @@ void MeGLWindow::initializeGL()
 	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
 	const GLchar* adapter[1];
-	adapter[0] = vertexShaderCode;
+	string temp = readShaderCode("VertexShaderCode.glsl");
+	adapter[0] = temp.c_str();
 	glShaderSource(vertexShaderID, 1, adapter, 0);
-	adapter[0] = fragmentShaderCode;
+	temp = readShaderCode("FragmentShaderCode.glsl");
+	adapter[0] = temp.c_str();
 	glShaderSource(fragmentShaderID, 1, adapter, 0);
 
 	glCompileShader(vertexShaderID);
@@ -116,8 +130,8 @@ void MeGLWindow::initializeGL()
 	}
 
 	GLuint programID = glCreateProgram();
-	//glAttachShader(programID, vertexShaderID);
-	//glAttachShader(programID, fragmentShaderID);
+	glAttachShader(programID, vertexShaderID);
+	glAttachShader(programID, fragmentShaderID);
 	glLinkProgram(programID);
 
 	if (!checkProgramStatus(programID))
