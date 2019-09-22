@@ -4,6 +4,7 @@
 #include <QtCore\qtimer.h>
 #include <fstream>
 #include <iostream>
+#include <random>
 using namespace std;
 
 GLuint programID;
@@ -12,15 +13,16 @@ GLint moveLocation;
 GLint colors;
 GLfloat posLeft[2];
 GLfloat posRight[2];
+GLfloat randVelocity[2];
 
 MeGLWindow::MeGLWindow()
 {
 	//Update per frame
 	QTimer *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-	timer->start(32);
+	timer->start(15);
 
-	setWindowTitle(tr("Two Triangles"));
+	setWindowTitle(tr("Update and Velocity"));
 
 }
 
@@ -88,9 +90,15 @@ void MeGLWindow::initializeGL()
 		1.0f, 0.0f,
 		0.0f, 1.0f,
 
+		0.0f, 0.3f,
+		-0.05f,0.0f,
+		-0.02f, -0.1f,
+		-0.03f, 0.0f,
 		0.0f, 0.1f,
-		-0.1f,-0.1f,
-		0.1f, -0.1f,
+		0.03f,0.0f,
+		0.02f,-0.1f,
+		0.05f,0.0f,
+
 	};
 
 	//Initialize the position offset
@@ -149,9 +157,14 @@ void MeGLWindow::initializeGL()
 
 	//Set uniforms
 	startLocation = glGetUniformLocation(programID, "startOffset");	 
-
 	colors = glGetUniformLocation(programID, "theColor");
 	
+	random_device rd;	
+	mt19937 eng(rd());	
+	uniform_real_distribution<> distr(-0.03f, 0.03f);
+
+	randVelocity[0] = distr(eng);
+	randVelocity[1] = distr(eng);
 }
 
 
@@ -162,7 +175,7 @@ void Draw(int shapeNum)
 	if(shapeNum==1)
 		glDrawArrays(GL_QUADS, 0, 4);
 	if(shapeNum==2)
-		glDrawArrays(GL_TRIANGLES, 4, 3);
+		glDrawArrays(GL_LINE_LOOP, 4, 8);
 }
 
 void MeGLWindow::paintGL()
@@ -229,8 +242,10 @@ void MeGLWindow::update(int triNum)
 	}
 	if (triNum == 2)
 	{
+		posRight[0] += randVelocity[0];
+		posRight[1] += randVelocity[1];
 		glUniform2fv(startLocation, 1, posRight);
-		glUniform3f(colors, 0.0f, 0.0f, 1.0f);
+		glUniform3f(colors, 0.0f, 0.0f, 1.0f);		
 	}	
 
 }
