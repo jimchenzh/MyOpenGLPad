@@ -84,8 +84,13 @@ void MeGLWindow::initializeGL()
 	GLfloat verts[] =
 	{
 		-1.0f, 0.0f,
-		-0.5f,-1.0f,
-		-0.5f, 0.0f,
+		0.0f, -1.0f,
+		1.0f, 0.0f,
+		0.0f, 1.0f,
+
+		0.0f, 0.1f,
+		-0.1f,-0.1f,
+		0.1f, -0.1f,
 	};
 
 	//Initialize the position offset
@@ -101,12 +106,12 @@ void MeGLWindow::initializeGL()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-	GLushort indicies[] = { 0,1,2 };
+	/*GLushort indicies[] = { 0,1,2,3 };
 	GLuint indexBufferID;
 	glGenBuffers(1, &indexBufferID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), 
-		indicies, GL_STATIC_DRAW);
+		indicies, GL_STATIC_DRAW);*/
 	
 
 	//Install shaders
@@ -147,16 +152,17 @@ void MeGLWindow::initializeGL()
 
 	colors = glGetUniformLocation(programID, "theColor");
 	
-
-	posRight[0] = 1.0f; //Set right triangle offset;
-
 }
 
 
 
-void Draw()
+void Draw(int shapeNum)
 {		
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, 0);
+	//glDrawElements(GL_QUADS, 4, GL_UNSIGNED_SHORT, 0);
+	if(shapeNum==1)
+		glDrawArrays(GL_QUADS, 0, 4);
+	if(shapeNum==2)
+		glDrawArrays(GL_TRIANGLES, 4, 3);
 }
 
 void MeGLWindow::paintGL()
@@ -166,9 +172,9 @@ void MeGLWindow::paintGL()
 	glViewport(0, 0, width(), height());
 
 	update(1);
-	Draw();
+	Draw(1);
 	update(2);
-	Draw();
+	Draw(2);
 
 	glFlush();
 }
