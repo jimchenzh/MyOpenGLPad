@@ -80,24 +80,28 @@ string readShaderCode(const char* fileName)
 void MeGLWindow::initializeGL()
 {
 	glewInit();
-	
+	glEnable(GL_DEPTH_TEST);
 
 	//Send data to OpenGL
+
+	const float diamond_Z = 0.5f;
+	const float shape_Z = -0.5f;
+
 	GLfloat verts[] =
 	{
-		-1.0f, 0.0f,
-		0.0f, -1.0f,
-		1.0f, 0.0f,
-		0.0f, 1.0f,
+		-1.0f, 0.0f, diamond_Z,
+		0.0f, -1.0f, diamond_Z,
+		1.0f, 0.0f, diamond_Z,
+		0.0f, 1.0f, diamond_Z,
 
-		0.0f, 0.3f,
-		-0.05f,0.0f,
-		-0.02f, -0.1f,
-		-0.03f, 0.0f,
-		0.0f, 0.1f,
-		0.03f,0.0f,
-		0.02f,-0.1f,
-		0.05f,0.0f,
+		0.0f, 0.3f, shape_Z,
+		-0.05f,0.0f, shape_Z,
+		-0.02f, -0.1f, shape_Z,
+		-0.03f, 0.0f, shape_Z,
+		0.0f, 0.1f, shape_Z,
+		0.03f,0.0f, shape_Z,
+		0.02f,-0.1f, shape_Z,
+		0.05f,0.0f, shape_Z,
 
 	};
 
@@ -112,7 +116,7 @@ void MeGLWindow::initializeGL()
 	glBindBuffer(GL_ARRAY_BUFFER, myBufferID);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
 
 	/*GLushort indicies[] = { 0,1,2,3 };
 	GLuint indexBufferID;
@@ -161,7 +165,7 @@ void MeGLWindow::initializeGL()
 	
 	random_device rd;	
 	mt19937 eng(rd());	
-	uniform_real_distribution<> distr(-0.03f, 0.03f);
+	uniform_real_distribution<> distr(-0.01f, 0.01f);
 
 	randVelocity[0] = distr(eng);
 	randVelocity[1] = distr(eng);
@@ -180,10 +184,9 @@ void Draw(int shapeNum)
 
 void MeGLWindow::paintGL()
 {
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
 	glViewport(0, 0, width(), height());
-
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	
 	update(1);
 	Draw(1);
 	update(2);
@@ -237,14 +240,14 @@ void MeGLWindow::update(int triNum)
 {	
 	if (triNum == 1)
 	{
-		glUniform2fv(startLocation, 1, posLeft);
+		glUniform3f(startLocation, posLeft[0], posLeft[1], 0);
 		glUniform3f(colors, 0.0f, 1.0f, 0.0f);		
 	}
 	if (triNum == 2)
 	{
 		posRight[0] += randVelocity[0];
 		posRight[1] += randVelocity[1];
-		glUniform2fv(startLocation, 1, posRight);
+		glUniform3f(startLocation, posRight[0], posRight[1], 0);
 		glUniform3f(colors, 0.0f, 0.0f, 1.0f);		
 	}	
 
