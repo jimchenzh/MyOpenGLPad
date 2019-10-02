@@ -5,6 +5,9 @@
 #include <fstream>
 #include <iostream>
 #include <random>
+#include <glm\glm.hpp>
+#include <glm\gtx\perpendicular.hpp>
+#include "Vertex.h"
 using namespace std;
 
 GLuint programID;
@@ -14,6 +17,25 @@ GLint colors;
 GLfloat posLeft[2];
 GLfloat posRight[2];
 GLfloat randVelocity[2];
+const float diamond_Z = 0.5f;
+const float shape_Z = 0.0f;
+Vertex verts[] =
+{
+	glm::vec3(-1.0f, 0.0f, diamond_Z),
+	glm::vec3(0.0f, -1.0f, diamond_Z),
+	glm::vec3(1.0f, 0.0f, diamond_Z),
+	glm::vec3(0.0f, 1.0f, diamond_Z),
+
+	glm::vec3(0.0f, 0.3f, shape_Z),
+	glm::vec3(-0.05f,0.0f, shape_Z),
+	glm::vec3(-0.02f, -0.1f, shape_Z),
+	glm::vec3(-0.03f, 0.0f, shape_Z),
+	glm::vec3(0.0f, 0.1f, shape_Z),
+	glm::vec3(0.03f,0.0f, shape_Z),
+	glm::vec3(0.02f,-0.1f, shape_Z),
+	glm::vec3(0.05f,0.0f, shape_Z),
+
+};  //A dirty way of setting global variables
 
 MeGLWindow::MeGLWindow()
 {
@@ -63,6 +85,25 @@ bool checkProgramStatus(GLuint programID)
 	return checkStatus(programID, glGetProgramiv, glGetProgramInfoLog, GL_LINK_STATUS);
 }
 
+
+
+bool edgeDetection(int edgeNum, Vertex verts[], float offset[])
+{
+	for (int i = 0; i < edgeNum; i++)
+	{
+		glm::vec3 edge = verts[(i+1) % edgeNum].position - verts[i].position;
+		glm::vec3 normal = -glm::cross(edge, glm::vec3(0, 0, 1));  //Need to set projection and model view matrix to get the correct z direction. Right now the default clip space is a left-handed coordinate system.
+		glm::vec3 planePos = verts[5].position + glm::vec3(offset[0], offset[1], 0) - verts[i].position;
+		if (glm::dot(planePos, normal) < 0)
+		{
+			cout << "Hit" << endl;
+			break;
+			return false;
+		}		
+	}
+	return true;
+}
+
 string readShaderCode(const char* fileName)
 {
 	ifstream meInput(fileName);
@@ -84,26 +125,9 @@ void MeGLWindow::initializeGL()
 
 	//Send data to OpenGL
 
-	const float diamond_Z = 0.5f;
-	const float shape_Z = -0.5f;
+	
 
-	GLfloat verts[] =
-	{
-		-1.0f, 0.0f, diamond_Z,
-		0.0f, -1.0f, diamond_Z,
-		1.0f, 0.0f, diamond_Z,
-		0.0f, 1.0f, diamond_Z,
-
-		0.0f, 0.3f, shape_Z,
-		-0.05f,0.0f, shape_Z,
-		-0.02f, -0.1f, shape_Z,
-		-0.03f, 0.0f, shape_Z,
-		0.0f, 0.1f, shape_Z,
-		0.03f,0.0f, shape_Z,
-		0.02f,-0.1f, shape_Z,
-		0.05f,0.0f, shape_Z,
-
-	};
+	
 
 	//Initialize the position offset
 	posLeft[0] = 0;
@@ -248,7 +272,8 @@ void MeGLWindow::update(int triNum)
 		posRight[0] += randVelocity[0];
 		posRight[1] += randVelocity[1];
 		glUniform3f(startLocation, posRight[0], posRight[1], 0);
-		glUniform3f(colors, 0.0f, 0.0f, 1.0f);		
+		glUniform3f(colors, 0.0f, 0.0f, 1.0f);
+		edgeDetection(4, verts, posRight);
 	}	
 
 }
