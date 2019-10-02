@@ -95,12 +95,18 @@ bool edgeDetection(int edgeNum, Vertex verts[], float offset[])
 	{
 		glm::vec3 edge = verts[(i+1) % edgeNum].position - verts[i].position;
 		glm::vec3 normal = glm::cross(edge, glm::vec3(0, 0, -1));  
+		glm::vec3 NormalizedNormal = glm::normalize(normal);
 		glm::vec3 planePos = verts[5].position + glm::vec3(offset[0], offset[1], 0) - verts[i].position;
 		if (glm::dot(planePos, normal) < 0)
 		{
 			cout << "Hit" << endl;
-			break;
+			glm::vec3 speed = glm::vec3(randVelocity[0], randVelocity[1], 0.0f);			
+			speed = 2.0f * (speed + NormalizedNormal * (glm::dot(-speed, NormalizedNormal))) - speed;
+			randVelocity[0] = speed.x;
+			randVelocity[1] = speed.y;
 			return false;
+			//break;
+			
 		}		
 	}
 	return true;
@@ -191,7 +197,7 @@ void MeGLWindow::initializeGL()
 	
 	random_device rd;	
 	mt19937 eng(rd());	
-	uniform_real_distribution<> distr(-0.01f, 0.01f);
+	uniform_real_distribution<> distr(-0.02f, 0.02f);
 
 	randVelocity[0] = distr(eng);
 	randVelocity[1] = distr(eng);
@@ -275,7 +281,7 @@ void MeGLWindow::update(int triNum)
 		posRight[1] += randVelocity[1];
 		glUniform3f(startLocation, posRight[0], posRight[1], 0);
 		glUniform3f(colors, 0.0f, 0.0f, 1.0f);
-		edgeDetection(4, verts, posRight);
+		edgeDetection(4, verts, posRight);		
 	}	
 
 }
