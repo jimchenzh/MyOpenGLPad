@@ -19,6 +19,8 @@ GLfloat posRight[2];
 GLfloat randVelocity[2];
 const float diamond_Z = 0.5f;
 const float shape_Z = 0.0f;
+//Need to set projection and model view matrix to get the correct z direction. 
+//Right now the default clip space is a left-handed coordinate system.
 Vertex verts[] =
 {
 	glm::vec3(-1.0f, 0.0f, diamond_Z),
@@ -92,7 +94,7 @@ bool edgeDetection(int edgeNum, Vertex verts[], float offset[])
 	for (int i = 0; i < edgeNum; i++)
 	{
 		glm::vec3 edge = verts[(i+1) % edgeNum].position - verts[i].position;
-		glm::vec3 normal = -glm::cross(edge, glm::vec3(0, 0, 1));  //Need to set projection and model view matrix to get the correct z direction. Right now the default clip space is a left-handed coordinate system.
+		glm::vec3 normal = glm::cross(edge, glm::vec3(0, 0, -1));  
 		glm::vec3 planePos = verts[5].position + glm::vec3(offset[0], offset[1], 0) - verts[i].position;
 		if (glm::dot(planePos, normal) < 0)
 		{
