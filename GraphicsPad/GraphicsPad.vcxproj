@@ -152,9 +152,12 @@
   <ItemGroup>
     <ClCompile Include="Mainer.cpp" />
     <ClCompile Include="MeGLWindow.cpp" />
+    <ClCompile Include="ShapeGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MeGLWindow.h" />
+    <ClInclude Include="shapeData.h" />
+    <ClInclude Include="ShapeGenerator.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>

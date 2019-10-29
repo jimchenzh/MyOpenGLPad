@@ -8,6 +8,7 @@
 #include <glm\glm.hpp>
 #include <glm\gtx\perpendicular.hpp>
 #include "Vertex.h"
+#include <ShapeGenerator.h>;
 using namespace std;
 
 GLuint programID;
@@ -21,7 +22,7 @@ const float diamond_Z = 0.5f;
 const float shape_Z = 0.0f;
 //Need to set projection and model view matrix to get the correct z direction. 
 //Right now the default clip space is a left-handed coordinate system.
-Vertex verts[] =
+/*Vertex verts[] =
 {
 	glm::vec3(-1.0f, 0.0f, diamond_Z),
 	glm::vec3(0.0f, -1.0f, diamond_Z),
@@ -37,7 +38,7 @@ Vertex verts[] =
 	glm::vec3(0.02f,-0.1f, shape_Z),
 	glm::vec3(0.05f,0.0f, shape_Z),
 
-};  //A dirty way of setting global variables
+};*/
 
 MeGLWindow::MeGLWindow()
 {
@@ -132,7 +133,7 @@ void MeGLWindow::initializeGL()
 	glEnable(GL_DEPTH_TEST);
 
 	//Send data to OpenGL
-
+	shapeData tri = ShapeGenerator::makeTriangle();
 	
 
 	
@@ -146,7 +147,9 @@ void MeGLWindow::initializeGL()
 	GLuint myBufferID;
 	glGenBuffers(1, &myBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, myBufferID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+	//Getting data from the ShapeGenerator
+	glBufferData(GL_ARRAY_BUFFER, tri.vertexBufferSize(), tri.vertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
 
@@ -154,8 +157,11 @@ void MeGLWindow::initializeGL()
 	GLuint indexBufferID;
 	glGenBuffers(1, &indexBufferID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), 
-		indicies, GL_STATIC_DRAW);*/
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), 
+		indicies, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, tri.indexBufferSize(), 
+		tri.indicies, GL_STATIC_DRAW);
+	*/
 	
 
 	//Install shaders
@@ -209,9 +215,10 @@ void Draw(int shapeNum)
 {		
 	//glDrawElements(GL_QUADS, 4, GL_UNSIGNED_SHORT, 0);
 	if(shapeNum==1)
-		glDrawArrays(GL_QUADS, 0, 4);
-	if(shapeNum==2)
-		glDrawArrays(GL_LINE_LOOP, 4, 8);
+		//glDrawArrays(GL_QUADS, 0, 4);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+	//if(shapeNum==2)
+		//glDrawArrays(GL_LINE_LOOP, 4, 8);
 }
 
 void MeGLWindow::paintGL()
@@ -281,7 +288,7 @@ void MeGLWindow::update(int triNum)
 		posRight[1] += randVelocity[1];
 		glUniform3f(startLocation, posRight[0], posRight[1], 0);
 		glUniform3f(colors, 0.0f, 0.0f, 1.0f);
-		edgeDetection(4, verts, posRight);		
+		//edgeDetection(4, verts, posRight);		
 	}	
 
 }
