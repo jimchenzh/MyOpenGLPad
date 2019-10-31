@@ -152,12 +152,7 @@ void MeGLWindow::paintGL()
 	mat4 projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 10.0f);
 	mat4 projectionTranslationMatrix = glm::translate(projectionMatrix, vec3(0.0f, 0.0f, -3.0f));
 	mat4 fullTransformMatrix = glm::rotate(projectionTranslationMatrix, 0.0f, vec3(1.0f, 0.0f, 0.0f));
-		
-
-	GLint modelTransformMatrixUniformLocation = glGetUniformLocation(programID,
-		"modelTransformMatrix");
-	GLint projectionMatrixUniformLocatioon = glGetUniformLocation(programID,
-		"projectionMatrix");
+			
 	GLint fullTransformMatrixUniformLocatioon = glGetUniformLocation(programID,
 		"fullTransformMatrix");
 	
@@ -165,17 +160,12 @@ void MeGLWindow::paintGL()
 	vec = fullTransformMatrix * vec;
 	cout << vec.x << "," << vec.y <<","<< vec.z << endl;
 
-	//glUniformMatrix4fv(modelTransformMatrixUniformLocation, 1,
-		//GL_FALSE, &modelTransformMatrix[0][0]);
-	//glUniformMatrix4fv(projectionMatrixUniformLocatioon, 1,
-		//GL_FALSE, &projectionMatrix[0][0]);
 	glUniformMatrix4fv(fullTransformMatrixUniformLocatioon, 1,
 		GL_FALSE, &fullTransformMatrix[0][0]);
 
-	//update(1);
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
 
-	glFlush();
+	//glFlush();
 }
 
 void MeGLWindow::keyPressEvent(QKeyEvent *e)
