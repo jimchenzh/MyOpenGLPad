@@ -18,8 +18,14 @@ struct shapeData
 	{
 		return numVertices * sizeof(Vertex);
 	}
-	GLsizeiptr indexBUfferSize() const
+	GLsizeiptr indexBufferSize() const
 	{
 		return numIndices * sizeof(GLushort);
+	}
+	void cleanUp()
+	{
+		delete[] vertices;
+		delete[] indices;
+		numVertices = numIndices = 0;
 	}
 };
