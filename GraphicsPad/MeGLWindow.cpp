@@ -16,16 +16,16 @@ using glm::mat4;
 
 GLuint programID;
 GLuint numIndices;
-
+float angle = 0;
 
 
 
 MeGLWindow::MeGLWindow()
 {
 	//Update per frame
-	/*QTimer *timer = new QTimer(this);
+	QTimer *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-	timer->start(15);*/
+	timer->start(15);
 
 	setWindowTitle(tr("Draw 3D Cubes"));
 
@@ -131,7 +131,7 @@ void MeGLWindow::initializeGL()
 		return;
 	}
 
-	GLuint programID = glCreateProgram();
+	programID = glCreateProgram();
 	glAttachShader(programID, vertexShaderID);
 	glAttachShader(programID, fragmentShaderID);
 	glLinkProgram(programID);
@@ -149,20 +149,26 @@ void MeGLWindow::paintGL()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
 	
+	
+
 	mat4 projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 10.0f);
 	mat4 projectionTranslationMatrix = glm::translate(projectionMatrix, vec3(0.0f, 0.0f, -3.0f));
-	mat4 fullTransformMatrix = glm::rotate(projectionTranslationMatrix, 0.0f, vec3(1.0f, 0.0f, 0.0f));
-			
+	mat4 fullTransformMatrix = glm::rotate(projectionTranslationMatrix, angle, vec3(1.0f, 0.0f, 0.0f));
+	
+	
+	
+
 	GLint fullTransformMatrixUniformLocatioon = glGetUniformLocation(programID,
 		"fullTransformMatrix");
 	
 	glm::vec4 vec(0.0f, 0.0f, -1.0f, 1.0f);
 	vec = fullTransformMatrix * vec;
-	cout << vec.x << "," << vec.y <<","<< vec.z << endl;
+	//cout << vec.x << "," << vec.y <<","<< vec.z << endl;
 
 	glUniformMatrix4fv(fullTransformMatrixUniformLocatioon, 1,
 		GL_FALSE, &fullTransformMatrix[0][0]);
 
+	update();
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
 
 	//glFlush();
@@ -177,9 +183,10 @@ void MeGLWindow::keyPressEvent(QKeyEvent *e)
 	QWidget::keyPressEvent(e);*/
 }
 
-void MeGLWindow::update(int triNum)
+void MeGLWindow::update()
 {	
-		
+	angle += 1;
+	if (angle > 360) angle = 0;
 
 }
 

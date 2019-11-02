@@ -9,7 +9,7 @@ protected:
 	void initializeGL();
 	void paintGL();
 	void keyPressEvent(QKeyEvent * e);
-	void update(int triNum);
+	void update();
 	
 
 public:
