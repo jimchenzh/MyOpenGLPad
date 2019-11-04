@@ -17,7 +17,13 @@ using glm::mat4;
 GLuint programID;
 GLuint numIndices;
 float angle = 0;
-
+vec3 cameraMove = vec3(0, 0, 0);
+vec3 lookOffset = vec3(0, 0, 0);
+mat4 projectionMatrix;
+mat4 lookMatrix;
+mat4 projectionTranslationMatrix;
+mat4 fullTransformMatrix;
+GLint fullTransformMatrixUniformLocation;
 
 
 MeGLWindow::MeGLWindow()
@@ -149,38 +155,55 @@ void MeGLWindow::paintGL()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
 	
+	projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 10.0f);	
+	projectionTranslationMatrix = glm::translate(projectionMatrix, vec3(0, 0, -3) + cameraMove);
+	fullTransformMatrix = glm::rotate(projectionTranslationMatrix, angle, vec3(1.0f, 0.5f, 0.0f));
+	//lookMatrix = glm::lookAt(cameraMove, vec3(0, 0, -3), vec3(0, 1, 0));
 	
-
-	mat4 projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 10.0f);
-	mat4 projectionTranslationMatrix = glm::translate(projectionMatrix, vec3(0.0f, 0.0f, -3.0f));
-	mat4 fullTransformMatrix = glm::rotate(projectionTranslationMatrix, angle, vec3(1.0f, 0.0f, 0.0f));
-	
-	
-	
-
-	GLint fullTransformMatrixUniformLocatioon = glGetUniformLocation(programID,
+	fullTransformMatrixUniformLocation = glGetUniformLocation(programID,
 		"fullTransformMatrix");
 	
-	glm::vec4 vec(0.0f, 0.0f, -1.0f, 1.0f);
-	vec = fullTransformMatrix * vec;
-	//cout << vec.x << "," << vec.y <<","<< vec.z << endl;
 
-	glUniformMatrix4fv(fullTransformMatrixUniformLocatioon, 1,
+	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1,
 		GL_FALSE, &fullTransformMatrix[0][0]);
 
 	update();
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
 
-	//glFlush();
+	glFlush();
 }
 
 void MeGLWindow::keyPressEvent(QKeyEvent *e)
 {
-	/*if (e->key() == Qt::Key_W)
+	if (e->key() == Qt::Key_W)
 	{
-		posLeft[1] += 0.1f;		
-	}	
-	QWidget::keyPressEvent(e);*/
+		cameraMove.y -= 0.1f;
+	}
+	if (e->key() == Qt::Key_A)
+	{
+		cameraMove.x += 0.1f;
+	}
+	if (e->key() == Qt::Key_S)
+	{
+		cameraMove.y += 0.1f;
+	}
+	if (e->key() == Qt::Key_D)
+	{
+		cameraMove.x -= 0.1f;
+	}
+	if (e->key() == Qt::Key_Q)
+	{
+		cameraMove.z -= 0.1f;
+	}
+	if (e->key() == Qt::Key_E)
+	{
+		cameraMove.z += 0.1f;
+	}
+	if (e->key() == Qt::Key_Escape)
+	{
+		close();
+	}
+	QWidget::keyPressEvent(e);
 }
 
 void MeGLWindow::update()
