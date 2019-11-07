@@ -7,6 +7,7 @@
 #include <random>
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
+#include <glm\gtx\transform.hpp>
 #include <glm\gtx\perpendicular.hpp>
 #include "Vertex.h"
 #include <ShapeGenerator.h>;
@@ -161,25 +162,25 @@ void MeGLWindow::paintGL()
 	projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 20.0f);
 	lookMatrix = glm::lookAt(cameraMove, cameraMove + lookDirection, vec3(0, 1, 0));
 	
-	mat4 fullTransformMatrix[] =
-	{
-		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(mat4(), vec3(0, 0, -3.0f)) * glm::rotate(mat4(), angle, vec3(1.0f, 0.5f, 0.0f)),
-		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(mat4(), vec3(0, 0.5f, -3.0f)) * glm::rotate(mat4(), angle, vec3(0.0f, 0.5f, 2.0f)),
-	};
+	mat4 fullTransformMatrix = projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(0, 0, -3.0f)) * glm::rotate(angle, vec3(1.0f, 0.5f, 0.0f));
+	
+
 	
 	fullTransformMatrixUniformLocation = glGetUniformLocation(programID,
 		"fullTransformMatrix");
 
 
+	
+	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1,
+		GL_FALSE, &fullTransformMatrix[0][0]);	
+	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
+
+	fullTransformMatrix = projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(-2.0f, 0.0f, -4.0f)) * glm::rotate(50.0f, vec3(0.0f, 0.0f, 1.0f));
+	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1,
+		GL_FALSE, &fullTransformMatrix[0][0]);
+	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
+
 	update();
-	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1,
-		GL_FALSE, &fullTransformMatrix[0][0][0]);	
-	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
-
-	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1,
-		GL_FALSE, &fullTransformMatrix[0][0][1]);
-	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
-
 	glFlush();
 }
 
