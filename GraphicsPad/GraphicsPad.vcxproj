@@ -150,11 +150,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Mainer.cpp" />
     <ClCompile Include="MeGLWindow.cpp" />
     <ClCompile Include="ShapeGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="MeGLWindow.h" />
     <ClInclude Include="shapeData.h" />
     <ClInclude Include="ShapeGenerator.h" />

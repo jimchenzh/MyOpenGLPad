@@ -4,6 +4,7 @@
     <ClCompile Include="Mainer.cpp" />
     <ClCompile Include="MeGLWindow.cpp" />
     <ClCompile Include="ShapeGenerator.cpp" />
+    <ClCompile Include="Camera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MeGLWindow.h" />
@@ -14,6 +15,7 @@
       <Filter>Primitives</Filter>
     </ClInclude>
     <ClInclude Include="ShapeGenerator.h" />
+    <ClInclude Include="Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="VertexShaderCode.glsl" />

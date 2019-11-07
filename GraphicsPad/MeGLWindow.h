@@ -8,7 +8,9 @@ class MeGLWindow : public QGLWidget
 protected:
 	void initializeGL();
 	void paintGL();
+	void mouseMoveEvent(QMouseEvent*);
 	void keyPressEvent(QKeyEvent * e);
+	void wheelEvent(QWheelEvent * w);
 	void update();
 	
 
