@@ -164,13 +164,14 @@ void MeGLWindow::paintGL()
 	
 	mat4 fullTransformMatrix = projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(0, 0, -3.0f)) * glm::rotate(angle, vec3(1.0f, 0.5f, 0.0f));
 	
+	//set up lighting
+	GLint ambientLightUniformLocation = glGetUniformLocation(programID, "ambientLight");
+	vec3 ambientLight(0.1f, 0.1f, 0.1f);
+	glUniform3fv(ambientLightUniformLocation, 1, &ambientLight[0]);
 
-	
 	fullTransformMatrixUniformLocation = glGetUniformLocation(programID,
 		"fullTransformMatrix");
-
-
-	
+	   	
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1,
 		GL_FALSE, &fullTransformMatrix[0][0]);	
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
