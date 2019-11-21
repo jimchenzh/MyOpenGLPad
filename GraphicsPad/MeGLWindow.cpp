@@ -26,6 +26,8 @@ mat4 projectionMatrix;
 mat4 lookMatrix;
 mat4 projectionTranslationMatrix;
 mat4 rotateMatrix;
+mat4 worldSpaceMatrix;
+mat4 fullTransformMatrix;
 
 float ambientLight = 0.1f;
 vec3 lightPosition(0.0f, 20.0f, 5.0f);
@@ -168,8 +170,8 @@ void MeGLWindow::paintGL()
 	projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 20.0f);
 	lookMatrix = glm::lookAt(cameraMove, cameraMove + lookDirection, vec3(0, 1, 0));
 	
-	mat4 worldSpaceMatrix = glm::translate(vec3(0, -1.5f, -5.0f)) * glm::rotate(-90.0f, vec3(1.0f, 0.0f, 0.0f));
-	mat4 fullTransformMatrix = projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(0, -1.5f, -5.0f)) * glm::rotate(-90.0f, vec3(1.0f, 0.0f, 0.0f));
+	worldSpaceMatrix = glm::translate(vec3(0, -1.5f, -5.0f)) * glm::rotate(angle, vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(-90.0f, vec3(1.0f, 0.0f, 0.0f));
+	fullTransformMatrix = projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(0, -1.5f, -5.0f)) * glm::rotate(angle, vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(-90.0f, vec3(1.0f, 0.0f, 0.0f));
 	
 	//set up lighting
 	GLint ambientLightUniformLocation = glGetUniformLocation(programID, "ambientLight");	
@@ -235,10 +237,10 @@ void MeGLWindow::keyPressEvent(QKeyEvent *e)
 		lightPosition.y -= 0.5f;
 		break;
 	case Qt::Key::Key_Left:
-		lightPosition.x += 0.5f;
+		lightPosition.x -= 0.5f;
 		break;
 	case Qt::Key::Key_Right:
-		lightPosition.x -= 0.5f;
+		lightPosition.x += 0.5f;
 		break;	
 	}
 	QWidget::keyPressEvent(e);
@@ -246,7 +248,7 @@ void MeGLWindow::keyPressEvent(QKeyEvent *e)
 
 void MeGLWindow::update()
 {	
-	angle += 1;
+	angle += 0.5;
 	if (angle > 360) angle = 0;
 
 }
