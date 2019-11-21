@@ -10,7 +10,7 @@
 #include <glm\gtx\transform.hpp>
 #include <glm\gtx\perpendicular.hpp>
 #include "Vertex.h"
-#include <ShapeGenerator.h>;
+#include <ShapeGenerator.h>
 #include "Camera.h"
 using namespace std;
 using glm::vec3;
@@ -26,6 +26,9 @@ mat4 projectionMatrix;
 mat4 lookMatrix;
 mat4 projectionTranslationMatrix;
 mat4 rotateMatrix;
+
+float ambientLight = 0.1f;
+vec3 lightPosition(0.0f, 20.0f, 5.0f);
 
 GLint fullTransformMatrixUniformLocation;
 
@@ -98,8 +101,9 @@ void MeGLWindow::initializeGL()
 	glEnable(GL_DEPTH_TEST);
 
 	//Send data to OpenGL
-	shapeData shape = ShapeGenerator::makeCube();
-
+	//ShapeData shape = ShapeGenerator::makeCube();
+	ShapeData shape = ShapeGenerator::makeTeapot();
+	
 
 	GLuint myBufferID;
 	glGenBuffers(1, &myBufferID);
@@ -107,9 +111,11 @@ void MeGLWindow::initializeGL()
 	//Getting data from the ShapeGenerator
 	glBufferData(GL_ARRAY_BUFFER, shape.vertexBufferSize(), shape.vertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, 0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (char*)(sizeof(float) * 3));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (char*)(sizeof(float) * 3));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (char*)(sizeof(float) * 6));
 	
 	GLuint indexBufferID;
 	glGenBuffers(1, &indexBufferID);
@@ -162,24 +168,29 @@ void MeGLWindow::paintGL()
 	projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 20.0f);
 	lookMatrix = glm::lookAt(cameraMove, cameraMove + lookDirection, vec3(0, 1, 0));
 	
-	mat4 fullTransformMatrix = projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(0, 0, -3.0f)) * glm::rotate(angle, vec3(1.0f, 0.5f, 0.0f));
+	mat4 worldSpaceMatrix = glm::translate(vec3(0, -1.5f, -5.0f)) * glm::rotate(-90.0f, vec3(1.0f, 0.0f, 0.0f));
+	mat4 fullTransformMatrix = projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(0, -1.5f, -5.0f)) * glm::rotate(-90.0f, vec3(1.0f, 0.0f, 0.0f));
 	
 	//set up lighting
-	GLint ambientLightUniformLocation = glGetUniformLocation(programID, "ambientLight");
-	vec3 ambientLight(0.1f, 0.1f, 0.1f);
-	glUniform3fv(ambientLightUniformLocation, 1, &ambientLight[0]);
+	GLint ambientLightUniformLocation = glGetUniformLocation(programID, "ambientLight");	
+	glUniform1f(ambientLightUniformLocation, ambientLight);
 
+	GLint lightPositionUniformLocation = glGetUniformLocation(programID, "lightPosition");	
+	glUniform3fv(lightPositionUniformLocation, 1, &lightPosition[0]);
+
+	GLint cameraPositionUniformLocation = glGetUniformLocation(programID, "cameraPosition");
+	glUniform3fv(cameraPositionUniformLocation, 1, &camera.position[0]);
+
+
+	GLint worldSpaceTransformUniformLocation = glGetUniformLocation(programID, "worldSpaceMatrix");
+	glUniform3fv(worldSpaceTransformUniformLocation, 1, &worldSpaceMatrix[0][0]);
 	fullTransformMatrixUniformLocation = glGetUniformLocation(programID,
-		"fullTransformMatrix");
-	   	
+		"fullTransformMatrix");	   	
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1,
 		GL_FALSE, &fullTransformMatrix[0][0]);	
+
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
 
-	fullTransformMatrix = projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(-2.0f, 0.0f, -4.0f)) * glm::rotate(50.0f, vec3(0.0f, 0.0f, 1.0f));
-	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1,
-		GL_FALSE, &fullTransformMatrix[0][0]);
-	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
 
 	update();
 	glFlush();
@@ -217,6 +228,18 @@ void MeGLWindow::keyPressEvent(QKeyEvent *e)
 	case Qt::Key::Key_Escape:
 		close();
 		break;
+	case Qt::Key::Key_Up:
+		lightPosition.y += 0.5f;
+		break;
+	case Qt::Key::Key_Down:
+		lightPosition.y -= 0.5f;
+		break;
+	case Qt::Key::Key_Left:
+		lightPosition.x += 0.5f;
+		break;
+	case Qt::Key::Key_Right:
+		lightPosition.x -= 0.5f;
+		break;	
 	}
 	QWidget::keyPressEvent(e);
 }

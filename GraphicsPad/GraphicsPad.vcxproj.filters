@@ -11,11 +11,14 @@
     <ClInclude Include="Vertex.h">
       <Filter>Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="shapeData.h">
-      <Filter>Primitives</Filter>
-    </ClInclude>
     <ClInclude Include="ShapeGenerator.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="TeapotData.h">
+      <Filter>Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="ShapeData.h">
+      <Filter>Primitives</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="VertexShaderCode.glsl" />

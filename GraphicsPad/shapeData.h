@@ -3,9 +3,9 @@
 #include <Vertex.h>
 class Vertex;
 
-struct shapeData
+struct ShapeData
 {
-	shapeData() :
+	ShapeData() :
 		vertices(0), numVertices(0),
 		indices(0), numIndices(0) {}
 
