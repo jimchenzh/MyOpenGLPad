@@ -396,7 +396,8 @@ ShapeData ShapeGenerator::makeTeapot(uint tesselation, const glm::mat4& lidTrans
 		v.normal.x = normals[i * 3 + 0];
 		v.normal.y = normals[i * 3 + 1];
 		v.normal.z = normals[i * 3 + 2];
-		v.color = randomColor();
+		//v.color = randomColor();
+		v.color = vec3(1.0f, 0, 0);
 	}
 	return ret;
 }

@@ -33,6 +33,7 @@ float ambientLight = 0.1f;
 vec3 lightPosition(0.0f, 20.0f, 5.0f);
 
 GLint fullTransformMatrixUniformLocation;
+GLint worldSpaceTransformUniformLocation;
 
 
 MeGLWindow::MeGLWindow()
@@ -184,8 +185,9 @@ void MeGLWindow::paintGL()
 	glUniform3fv(cameraPositionUniformLocation, 1, &camera.position[0]);
 
 
-	GLint worldSpaceTransformUniformLocation = glGetUniformLocation(programID, "worldSpaceMatrix");
-	glUniform3fv(worldSpaceTransformUniformLocation, 1, &worldSpaceMatrix[0][0]);
+	worldSpaceTransformUniformLocation = glGetUniformLocation(programID, "worldSpaceMatrix");
+	glUniformMatrix4fv(worldSpaceTransformUniformLocation, 1, GL_FALSE, &worldSpaceMatrix[0][0]);
+
 	fullTransformMatrixUniformLocation = glGetUniformLocation(programID,
 		"fullTransformMatrix");	   	
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1,
