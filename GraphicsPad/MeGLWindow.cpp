@@ -33,11 +33,9 @@ mat4 fullTransformMatrix;
 //Load texture file
 const char * texName = "jamie.png";
 QImage JamieImg = QGLWidget::convertToGLFormat(QImage(texName));
-bool bb = QImage(JamieImg).isNull();
 
 
-
-float ambientLight = 0.1f;
+float ambientLight = 0.3f;
 vec3 lightPosition(0.0f, 20.0f, 5.0f);
 
 GLint fullTransformMatrixUniformLocation;
@@ -110,6 +108,11 @@ void MeGLWindow::initializeGL()
 {
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
+	//Enable blend
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_CULL_FACE);
+
 
 	//Send data to OpenGL
 	//ShapeData shape = ShapeGenerator::makeTriangle();

@@ -35,6 +35,8 @@ void main()
 	float diffuse = dot(nworldSpaceNormalPos, nlightVector) * 0.8f;
 
 
-	daColor = (diffuse + ambient) * texture(JTexture, TexCoord) + vec4(specular * vec3(1.0f, 1.0f, 1.0f), 1.0f);
+	daColor = (diffuse + ambient) * texture(JTexture, TexCoord)
+		+ vec4(specular * vec3(1.0f, 1.0f, 1.0f), 1.0f);
+	daColor.a = 0.6f;
 	//daColor = vec4(PositionToFrag, 1.0f);
 }
