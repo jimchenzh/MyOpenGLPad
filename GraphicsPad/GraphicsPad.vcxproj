@@ -167,6 +167,9 @@
     <None Include="FragmentShaderCode.glsl" />
     <None Include="VertexShaderCode.glsl" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="jamie.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

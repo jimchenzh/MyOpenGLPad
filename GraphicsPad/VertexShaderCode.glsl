@@ -6,37 +6,29 @@ in layout(location=2) vec3 normal;
 
 uniform vec3 cameraPosition;
 uniform vec3 lightPosition;
-uniform float ambientLight;
-
 uniform mat4 worldSpaceMatrix;
 uniform mat4 fullTransformMatrix;
 
-out vec3 theColor;
+out vec3 PositionToFrag;
+out vec3 lightVector;
+out vec3 camera;
+out vec3 worldSpaceNormalPos;
 
 void main()
 {
+	PositionToFrag = position;
+	
 	vec4 v = vec4(position, 1.0);
 	gl_Position = fullTransformMatrix * v;
 
 	//Get light vector
 	vec4 worldSpaceVertex = worldSpaceMatrix * v;
 	vec3 worldSpaceVertexPos = vec3(worldSpaceVertex);
-	vec3 lightVector = normalize(lightPosition - worldSpaceVertexPos);
+	lightVector = normalize(lightPosition - worldSpaceVertexPos);
 
-	//Specular Light
+	//Get camera vector
 	vec4 n = vec4(normal, 0);
 	vec4 worldSpaceNormal = worldSpaceMatrix * n;
-	vec3 worldSpaceNormalPos = vec3(worldSpaceNormal);
-	vec3 reflected = reflect(-1 * lightVector, worldSpaceNormalPos);
-	vec3 camera = normalize(cameraPosition - worldSpaceVertexPos);
-	float a = clamp(dot(reflected, camera), 0, 1);
-	a = pow(a, 10);
-	float specularLight = a;
-
-	//Diffuse Light
-	float diffuseLight = dot(worldSpaceNormalPos, lightVector);
-
-	//float totalLight = ambientLight + diffuseLight + specularLight;
-	theColor = vertexColor * ambientLight + vertexColor * diffuseLight + specularLight * vec3(1,1,1);
-	//theColor = normal;
+	worldSpaceNormalPos = vec3(worldSpaceNormal);	
+	camera = normalize(cameraPosition - worldSpaceVertexPos);	
 }

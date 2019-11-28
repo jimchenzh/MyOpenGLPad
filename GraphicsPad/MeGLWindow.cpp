@@ -12,6 +12,7 @@
 #include "Vertex.h"
 #include <ShapeGenerator.h>
 #include "Camera.h"
+
 using namespace std;
 using glm::vec3;
 using glm::mat4;
@@ -28,6 +29,13 @@ mat4 projectionTranslationMatrix;
 mat4 rotateMatrix;
 mat4 worldSpaceMatrix;
 mat4 fullTransformMatrix;
+
+//Load texture file
+const char * texName = "jamie.png";
+QImage JamieImg = QGLWidget::convertToGLFormat(QImage(texName));
+bool bb = QImage(JamieImg).isNull();
+
+
 
 float ambientLight = 0.1f;
 vec3 lightPosition(0.0f, 20.0f, 5.0f);
@@ -104,9 +112,24 @@ void MeGLWindow::initializeGL()
 	glEnable(GL_DEPTH_TEST);
 
 	//Send data to OpenGL
-	//ShapeData shape = ShapeGenerator::makeCube();
+	//ShapeData shape = ShapeGenerator::makeTriangle();
 	ShapeData shape = ShapeGenerator::makeTeapot();
 	
+	//Cope file to OpenGL
+	glActiveTexture(GL_TEXTURE0);
+	GLuint tid;
+	glGenTextures(1, &tid);
+	glBindTexture(GL_TEXTURE_2D, tid);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, JamieImg.width(),
+		JamieImg.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
+		JamieImg.bits());
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float borderColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
 
 	GLuint myBufferID;
 	glGenBuffers(1, &myBufferID);
@@ -175,7 +198,7 @@ void MeGLWindow::paintGL()
 	fullTransformMatrix = projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(vec3(0, -1.5f, -5.0f)) * glm::rotate(angle, vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(-90.0f, vec3(1.0f, 0.0f, 0.0f));
 	
 	//set up lighting
-	GLint ambientLightUniformLocation = glGetUniformLocation(programID, "ambientLight");	
+	GLint ambientLightUniformLocation = glGetUniformLocation(programID, "ambient");	
 	glUniform1f(ambientLightUniformLocation, ambientLight);
 
 	GLint lightPositionUniformLocation = glGetUniformLocation(programID, "lightPosition");	
@@ -192,6 +215,12 @@ void MeGLWindow::paintGL()
 		"fullTransformMatrix");	   	
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1,
 		GL_FALSE, &fullTransformMatrix[0][0]);	
+
+
+	//Set the texture sampler uniform to refer to texture unit 0
+	GLint textureLocation = glGetUniformLocation(programID, "JTexture");
+	glUniform1i(textureLocation, 0);
+
 
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
 

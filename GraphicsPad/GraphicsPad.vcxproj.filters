@@ -29,4 +29,7 @@
       <UniqueIdentifier>{ef862d3e-86d4-4e87-af94-20e7ac4a5625}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="jamie.png" />
+  </ItemGroup>
 </Project>
